@@ -18,7 +18,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: '*',
+    origin: process.env.DEXA_FE,
     credentials: true,
   });
   app.useGlobalInterceptors(new ResponseInterceptor());
