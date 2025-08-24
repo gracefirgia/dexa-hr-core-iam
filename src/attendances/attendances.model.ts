@@ -29,6 +29,15 @@ export class Attendance extends Model<Attendance, AttendanceCreationAttributes> 
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
   declare active: boolean;
 
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare isLate: boolean;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare isUnder: boolean;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare isOver: boolean;
+
   @Column({ field: 'created_at', type: DataType.DATE })
   declare createdAt: Date;
 

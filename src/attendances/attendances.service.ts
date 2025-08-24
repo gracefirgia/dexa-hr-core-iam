@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { Attendance, AttendanceCreationAttributes } from './attendances.model';
+import { Attendance } from './attendances.model';
 import { Employee } from 'src/employees/employees.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class AttendancesService {
@@ -12,13 +13,18 @@ export class AttendancesService {
     private readonly attendanceModel: typeof Attendance,
   ) { }
 
-  create(createAttendanceDto: CreateAttendanceDto, employeeId: string) {
-    const payload: AttendanceCreationAttributes = {
-      clock_in: createAttendanceDto.clock_in,
-      clock_out: createAttendanceDto.clock_out,
+  recordAttendance(createAttendanceDto: CreateAttendanceDto, employeeId: string) {
+    if ( createAttendanceDto.id ) {
+      this.attendanceModel.update({ clock_out: new Date().toString() }, { where: {id: createAttendanceDto.id} })
+      return "Attendance Updated!"
+    }
+
+    const payload = {
+      clock_in: new Date().toString(),
       employee_id: employeeId
     }
-    return this.attendanceModel.create(payload)
+    this.attendanceModel.create(payload)
+    return "Attendance Recorded!"
   }
 
   findAll(employeeId?: string) {
@@ -40,8 +46,23 @@ export class AttendancesService {
     );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} attendance`;
+  findOne(params: Partial<Attendance>) {
+    return this.attendanceModel.findOne({
+      where: params
+    })
+  }
+
+  findTodayAttendance(employee_id, clock_in_start,clock_in_end) {
+    console.log({clock_in_start, clock_in_end})
+    return this.attendanceModel.findOne({
+      where: {
+        active: true,
+        employee_id: employee_id,
+        clock_in: {
+          [Op.between]: [clock_in_start, clock_in_end],
+        },
+      }
+    })
   }
 
   update(id: number, updateAttendanceDto: UpdateAttendanceDto) {
