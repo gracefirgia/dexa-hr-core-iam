@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
-import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { Department } from './departments.model';
+import { Department, DepartmentCreationAttributes } from './departments.model';
 
 @Injectable()
 export class DepartmentsService {
@@ -12,7 +11,11 @@ export class DepartmentsService {
   ) { }
 
   create(createDepartmentDto: CreateDepartmentDto) {
-    return 'This action adds a new department';
+    const payload: DepartmentCreationAttributes = {
+      name: createDepartmentDto.name,
+      active: createDepartmentDto.active
+    };
+    return this.departmentModel.create(payload);
   }
 
   findAll() {
@@ -27,8 +30,12 @@ export class DepartmentsService {
     return `This action returns a #${id} department`;
   }
 
-  update(id: number, updateDepartmentDto: UpdateDepartmentDto) {
-    return `This action updates a #${id} department`;
+  update(id: string, updateDepartmentDto: CreateDepartmentDto) {
+    return this.departmentModel.update(updateDepartmentDto, {
+      where: {
+        id
+      }
+    });
   }
 
   remove(id: number) {
