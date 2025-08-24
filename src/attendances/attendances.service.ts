@@ -3,8 +3,7 @@ import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Attendance } from './attendances.model';
-import { Employee } from 'src/employees/employees.model';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { calculateWorkTime } from './utils/calculate';
 
 @Injectable()
@@ -42,13 +41,21 @@ export class AttendancesService {
 
     return this.attendanceModel.findAll(
       {
-        where,
-        include: [
-          {
-            model: Employee,
-            attributes: ['name'],
-          },
+        attributes: [
+          "id", "clock_in", "clock_out", "isLate", "isUnder", "isOver",
+          [
+          Sequelize.literal(`
+            CASE 
+              WHEN "isLate" = true THEN 'LATE' 
+              WHEN "isUnder" = true THEN 'UNDERTIME'
+              WHEN "isOver" = true THEN 'OVERTIME' 
+              ELSE 'NORMAL' 
+            END
+          `),
+          "status"
+          ]
         ],
+        where,
       }
     );
   }
@@ -60,7 +67,6 @@ export class AttendancesService {
   }
 
   findTodayAttendance(employee_id, clock_in_start,clock_in_end) {
-    console.log({clock_in_start, clock_in_end})
     return this.attendanceModel.findOne({
       where: {
         active: true,
