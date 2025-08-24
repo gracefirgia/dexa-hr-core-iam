@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Attendance } from './attendances.model';
 import { Employee } from 'src/employees/employees.model';
 import { Op } from 'sequelize';
+import { calculateWorkTime } from './utils/calculate';
 
 @Injectable()
 export class AttendancesService {
@@ -14,14 +15,20 @@ export class AttendancesService {
   ) { }
 
   recordAttendance(createAttendanceDto: CreateAttendanceDto, employeeId: string) {
+    const date = new Date().toString()
     if ( createAttendanceDto.id ) {
-      this.attendanceModel.update({ clock_out: new Date().toString() }, { where: {id: createAttendanceDto.id} })
+      const { under, overtime } = calculateWorkTime(createAttendanceDto.clockIn, date)
+      this.attendanceModel.update({ clock_out: date, isUnder: under, isOver: overtime }, { where: {id: createAttendanceDto.id} })
       return "Attendance Updated!"
     }
 
+    const { late, under, overtime } = calculateWorkTime(createAttendanceDto.clockIn)
     const payload = {
-      clock_in: new Date().toString(),
-      employee_id: employeeId
+      clock_in: date,
+      employee_id: employeeId,
+      isLate: late,
+      isUnder: under,
+      isOver: overtime
     }
     this.attendanceModel.create(payload)
     return "Attendance Recorded!"
