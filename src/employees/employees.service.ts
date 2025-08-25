@@ -121,7 +121,7 @@ export class EmployeesService {
 
     await this.employeeDetailModel.update(employee_detail as any, {
       where: {
-        id
+        employee_id: id
       },
       transaction
     });

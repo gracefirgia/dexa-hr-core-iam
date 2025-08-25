@@ -9,6 +9,7 @@ import { LoginDto } from './dto/login.dto';
 import { Employee } from '../employees/employees.model';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UpdatePasswordDto } from './dto/update-password';
 
 @Injectable()
 export class AuthService {
@@ -57,6 +58,11 @@ export class AuthService {
 
   update(id: number, updateAuthDto: UpdateAuthDto) {
     return `This action updates a #${id} auth`;
+  }
+
+  async updatePassword(id: string, updateAuthDto: UpdatePasswordDto) {
+    const hash = await bcrypt.hash(updateAuthDto.password, 10)
+    return this.employeeModel.update({ password: hash }, { where: { id } });
   }
 
   remove(id: number) {
