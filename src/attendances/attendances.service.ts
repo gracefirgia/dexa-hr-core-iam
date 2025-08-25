@@ -7,6 +7,7 @@ import { Op, Sequelize } from 'sequelize';
 import { calculateWorkTime } from './utils/calculate';
 import { Employee } from 'src/employees/employees.model';
 import { GetAttendanceDto } from './dto/get-attendance.dto';
+import { calculatePage } from 'src/utils/calculate';
 
 @Injectable()
 export class AttendancesService {
@@ -36,9 +37,7 @@ export class AttendancesService {
   }
 
   findAll(employeeId?: string, param?: GetAttendanceDto) {
-    const limit = param?.limit ? Number(param?.limit) : 10;
-    const page = param?.page ? Number(param?.page) : 1;
-    const offset = (page - 1) * limit;
+    const { limit, offset } = calculatePage(param?.limit, param?.page)
     const where = {
       active: true,
       ...(employeeId && {employee_id: employeeId}),
