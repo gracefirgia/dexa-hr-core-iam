@@ -26,27 +26,27 @@ export class Employee extends Model<Employee> {
   @Column({
     type: DataType.UUID,
   })
-  declare id: string;
+  declare id?: string;
 
   @ForeignKey(() => Department)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  declare department_id: string;
+  declare department_id?: string;
 
   @BelongsTo(() => Department)
-  declare department: Department;
+  declare department?: Department;
 
   @ForeignKey(() => Role)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  declare role_id: string;
+  declare role_id?: string;
 
   @BelongsTo(() => Role)
-  declare role: Role;
+  declare role?: Role;
 
   @Column({
     type: DataType.STRING,

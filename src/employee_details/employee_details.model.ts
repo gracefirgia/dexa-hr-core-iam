@@ -12,7 +12,8 @@ import { Employee } from 'src/employees/employees.model';
 import { v4 as uuidv4 } from 'uuid';
 
 @Table({
-  tableName: 'employee_details'
+  tableName: 'employee_details',
+  timestamps: false,
 })
 export class EmployeeDetail extends Model<EmployeeDetail> {
   @PrimaryKey
@@ -20,17 +21,17 @@ export class EmployeeDetail extends Model<EmployeeDetail> {
   @Column({
     type: DataType.UUID,
   })
-  declare id: string;
+  declare id?: string;
 
   @ForeignKey(() => Employee)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  declare employee_id: string;
+  declare employee_id?: string;
 
   @BelongsTo(() => Employee, { as: 'employee' })
-  declare employee: Employee;
+  declare employee?: Employee;
 
   @Column({
     type: DataType.STRING,
@@ -51,15 +52,4 @@ export class EmployeeDetail extends Model<EmployeeDetail> {
     type: DataType.DATE,
   })
   declare terminate_date: string;
-
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: true,
-  })
-  declare active: boolean;
-
-  @Column({
-    type: DataType.UUID,
-  })
-  declare created_by: string;
 }

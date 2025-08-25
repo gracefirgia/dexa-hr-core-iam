@@ -26,6 +26,7 @@ import { DataChangeRequestsModule } from './data_change_requests/data_change_req
         database: configService.get('DB_NAME'),
         autoLoadModels: true,
         synchronize: false,
+        logging: false,
       }),
     }),
     RolesModule,
