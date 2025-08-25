@@ -10,6 +10,8 @@ import { EmployeeDetailsModule } from './employee_details/employee_details.modul
 import { AuthModule } from './auth/auth.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { DataChangeRequestsModule } from './data_change_requests/data_change_requests.module';
+import { FirebaseAdminService } from './firebase_admin/firebase_admin.service';
+import { EmployeeTokenModule } from './employee_token/employee_token.module';
 
 @Module({
   imports: [
@@ -36,8 +38,9 @@ import { DataChangeRequestsModule } from './data_change_requests/data_change_req
     AuthModule,
     AttendancesModule,
     DataChangeRequestsModule,
+    EmployeeTokenModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, FirebaseAdminService],
 })
 export class AppModule {}

@@ -26,6 +26,7 @@ export class DataChangeRequestsService {
       notes: createDataChangeRequestDto.notes,
       field_changes,
     }
+    
     return this.dataChangeRequestModel.create(payload as any);
   }
 
