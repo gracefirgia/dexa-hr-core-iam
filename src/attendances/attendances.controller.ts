@@ -22,6 +22,11 @@ export class AttendancesController {
     return this.attendancesService.findAll(userId);
   }
 
+  @Get('all-employee')
+  findAllEmployee() {
+    return this.attendancesService.findAll();
+  }
+
   @Get('summary')
   async attendanceSummary(@User('id') userId: string) {
     const attendances = await this.attendancesService.findAll(userId);

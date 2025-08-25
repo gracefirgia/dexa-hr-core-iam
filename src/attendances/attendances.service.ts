@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Attendance } from './attendances.model';
 import { Op, Sequelize } from 'sequelize';
 import { calculateWorkTime } from './utils/calculate';
+import { Employee } from 'src/employees/employees.model';
 
 @Injectable()
 export class AttendancesService {
@@ -53,7 +54,13 @@ export class AttendancesService {
             END
           `),
           "status"
-          ]
+          ],
+        ],
+        include: [
+          {
+            model: Employee,
+            attributes: ["id", "name"]
+          }
         ],
         where,
       }

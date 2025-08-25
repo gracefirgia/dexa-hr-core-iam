@@ -3,7 +3,6 @@ import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.gurad';
-import { makeId } from 'src/utils/genererator';
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/common/decorators/user.decorator';
 
