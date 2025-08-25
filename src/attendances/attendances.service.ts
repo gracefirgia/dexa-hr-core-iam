@@ -6,6 +6,7 @@ import { Attendance } from './attendances.model';
 import { Op, Sequelize } from 'sequelize';
 import { calculateWorkTime } from './utils/calculate';
 import { Employee } from 'src/employees/employees.model';
+import { GetAttendanceDto } from './dto/get-attendance.dto';
 
 @Injectable()
 export class AttendancesService {
@@ -34,13 +35,21 @@ export class AttendancesService {
     return "Attendance Recorded!"
   }
 
-  findAll(employeeId?: string) {
+  findAll(employeeId?: string, param?: GetAttendanceDto) {
+    const limit = param?.limit ? Number(param?.limit) : 10;
+    const page = param?.page ? Number(param?.page) : 1;
+    const offset = (page - 1) * limit;
     const where = {
       active: true,
-      ...(employeeId && {employee_id: employeeId})
+      ...(employeeId && {employee_id: employeeId}),
+      ...(param?.start_date && {
+        clock_in: {
+          [Op.between]: [param?.start_date, param?.end_date],
+        },
+      })
     }
 
-    return this.attendanceModel.findAll(
+    return this.attendanceModel.findAndCountAll(
       {
         attributes: [
           "id", "clock_in", "clock_out", "isLate", "isUnder", "isOver",
@@ -63,6 +72,8 @@ export class AttendancesService {
           }
         ],
         where,
+        offset,
+        limit 
       }
     );
   }
