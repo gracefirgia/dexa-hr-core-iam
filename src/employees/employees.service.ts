@@ -53,7 +53,7 @@ export class EmployeesService {
   }
 
   findAll() {
-    return this.employeeModel.findAll(
+    return this.employeeModel.findAndCountAll(
       {
         attributes: ["id", "employee_code","name", "email", "active"],
         include: [

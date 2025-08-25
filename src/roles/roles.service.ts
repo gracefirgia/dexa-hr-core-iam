@@ -10,7 +10,7 @@ export class RolesService {
   ) { }
 
   findAll() {
-    return this.roleModel.findAll(
+    return this.roleModel.findAndCountAll(
       {
         attributes: ['id', 'name'],
         where: { active: true },

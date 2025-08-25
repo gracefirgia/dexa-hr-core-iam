@@ -19,7 +19,7 @@ export class DepartmentsService {
   }
 
   findAll() {
-    return this.departmentModel.findAll(
+    return this.departmentModel.findAndCountAll(
       {
         attributes: ['id', 'name', 'active'],
       }
