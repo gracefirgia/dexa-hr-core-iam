@@ -12,6 +12,7 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { DataChangeRequestsModule } from './data_change_requests/data_change_requests.module';
 import { FirebaseAdminService } from './firebase_admin/firebase_admin.service';
 import { EmployeeTokenModule } from './employee_token/employee_token.module';
+import { RabbitMqService } from './rabbit_mq/rabbit_mq.service';
 
 @Module({
   imports: [
@@ -41,6 +42,6 @@ import { EmployeeTokenModule } from './employee_token/employee_token.module';
     EmployeeTokenModule,
   ],
   controllers: [AppController],
-  providers: [AppService, FirebaseAdminService],
+  providers: [AppService, FirebaseAdminService, RabbitMqService],
 })
 export class AppModule {}
