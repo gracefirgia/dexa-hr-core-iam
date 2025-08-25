@@ -5,10 +5,16 @@ import type { Response } from 'express';
 import { JwtAuthGuard } from './jwt-auth.gurad';
 import { UpdatePasswordDto } from './dto/update-password';
 import { User } from 'src/common/decorators/user.decorator';
+import { FirebaseAdminService } from 'src/firebase_admin/firebase_admin.service';
+import { EmployeeTokenService } from 'src/employee_token/employee_token.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly firebaseAdminService: FirebaseAdminService,
+    private readonly employeeTokenService: EmployeeTokenService,
+  ) {}
 
   @Post('login')
   async login(
@@ -31,8 +37,22 @@ export class AuthController {
   @Patch('change-password')
   async changePassword(
     @Body() updateDto: UpdatePasswordDto,
-    @User('id') userId: string
+    @User('id') userId: string,
+    @User('name') name: string
   ) {
+    const request = await this.authService.updatePassword(userId, updateDto);
+    if (request) {
+      const tokens = await this.employeeTokenService.findAll()
+
+      const notificationPromises = tokens.map((t) =>
+        this.firebaseAdminService.sendNotification(
+          t.fcm_token,
+          'User Password Changed',
+          `Employee ${name} has successfully changed their password!`
+        ),
+      );
+      await Promise.all(notificationPromises);
+    }
     return this.authService.updatePassword(userId, updateDto);
   }
 }

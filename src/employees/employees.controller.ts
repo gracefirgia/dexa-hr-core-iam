@@ -5,6 +5,8 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.gurad';
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/common/decorators/user.decorator';
+import { FirebaseAdminService } from 'src/firebase_admin/firebase_admin.service';
+import { EmployeeTokenService } from 'src/employee_token/employee_token.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('employees')
@@ -12,6 +14,8 @@ export class EmployeesController {
   constructor(
     private readonly employeesService: EmployeesService,
     private readonly sequelize: Sequelize,
+    private readonly employeeTokenService: EmployeeTokenService,
+    private readonly firebaseAdminService: FirebaseAdminService,
   ) {}
 
   @Post()
@@ -33,11 +37,24 @@ export class EmployeesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
-    return this.sequelize.transaction(async (transaction) => {
+  async update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto, @User('name') name:string) {
+    const request = await this.sequelize.transaction(async (transaction) => {
       const employee = await this.employeesService.update(id, updateEmployeeDto, transaction);
       return employee;
     });
+    if (request) {
+      const tokens = await this.employeeTokenService.findAll()
+
+      const notificationPromises = tokens.map((t) =>
+        this.firebaseAdminService.sendNotification(
+          t.fcm_token,
+          'New Profile Info Change',
+          `Employee ${name} successfully changed their profile information!`
+        ),
+      );
+      await Promise.all(notificationPromises);
+    }
+    return request
   }
 
   @Delete(':id')

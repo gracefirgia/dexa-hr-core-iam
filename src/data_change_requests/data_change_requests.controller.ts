@@ -7,6 +7,7 @@ import { GetDataChangeRequestDto } from './dto/get-data_change_request.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { EmployeeTokenService } from 'src/employee_token/employee_token.service';
 import { FirebaseAdminService } from 'src/firebase_admin/firebase_admin.service';
+import { UpdateStatusDataChangeRequestDto } from './dto/update-status-data_change_request.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('data-change-requests')
@@ -49,6 +50,15 @@ export class DataChangeRequestsController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDataChangeRequestDto: UpdateDataChangeRequestDto) {
     return this.dataChangeRequestsService.update(+id, updateDataChangeRequestDto);
+  }
+
+  @Patch('approval/:id')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateDataChangeRequestDto: UpdateStatusDataChangeRequestDto,
+    @User('id') userId: string
+  ) {
+    return this.dataChangeRequestsService.updateStatus(id, updateDataChangeRequestDto, userId);
   }
 
   @Delete(':id')

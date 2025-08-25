@@ -8,6 +8,7 @@ import { GetDataChangeRequestDto } from './dto/get-data_change_request.dto';
 import { Op } from 'sequelize';
 import { Employee } from 'src/employees/employees.model';
 import { makeId } from 'src/utils/genererator';
+import { UpdateStatusDataChangeRequestDto } from './dto/update-status-data_change_request.dto';
 
 @Injectable()
 export class DataChangeRequestsService {
@@ -42,7 +43,7 @@ export class DataChangeRequestsService {
       })
     }
 
-    return this.dataChangeRequestModel.findAll(
+    return this.dataChangeRequestModel.findAndCountAll(
       {
         attributes: [
           "id", "code", "type", "notes", "status", "field_changes", "requested_at"
@@ -66,6 +67,10 @@ export class DataChangeRequestsService {
 
   update(id: number, updateDataChangeRequestDto: UpdateDataChangeRequestDto) {
     return `This action updates a #${id} dataChangeRequest`;
+  }
+
+  updateStatus(id: string, updateStatusDataChangeRequestDto: UpdateStatusDataChangeRequestDto, userId: string) {
+    return this.dataChangeRequestModel.update({ status: updateStatusDataChangeRequestDto.status, reviewed_by: userId }, { where: { id } });
   }
 
   remove(id: number) {
